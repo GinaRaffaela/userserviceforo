@@ -28,6 +28,8 @@ WORKDIR /app
 RUN mkdir -p /app/wallet
 
 COPY --from=build /workspace/users-service/target/users-service-1.0.0-SNAPSHOT.jar /app/app.jar
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /app/docker-entrypoint.sh && chmod +x /app/docker-entrypoint.sh
 
 ENV USERS_PORT=8081 \
     USERS_DB_URL="jdbc:oracle:thin:@host.docker.internal:1521/XEPDB1" \
@@ -40,4 +42,4 @@ ENV USERS_PORT=8081 \
 
 EXPOSE 8081
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
